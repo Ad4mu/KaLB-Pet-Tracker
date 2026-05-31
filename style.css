@@ -913,7 +913,7 @@ body::before {
 
 .gl-phantom {
   background: linear-gradient(#0d0d0d, #0d0d0d) padding-box,
-    linear-gradient(135deg, #d466ff, #93ff8b) border-box !important;
+    linear-gradient(135deg, #d1ffd0, #93ff8b) border-box !important;
   border-color: transparent !important;
   box-shadow: 0 0 12px rgba(212, 102, 255, .22), 0 0 10px rgba(147, 255, 139, .18) !important;
 }
