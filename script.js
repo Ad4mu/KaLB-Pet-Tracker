@@ -4,7 +4,7 @@
 const PETS = [
   // ── Exclusive ────────────────────────────────────────────────────────────
   {
-    name: "Rocky", price: 0, bg: "000000", fg: "ff1000", img: null,
+    name: "Rocky", price: 0, bg: "000000", fg: "ff1000", img: "images/Rocky.png",
     exclusive: true, category: "Exclusive"
   },
   // ── Standard ─────────────────────────────────────────────────────────────
@@ -20,8 +20,8 @@ const PETS = [
   { name: "Strawberry Elephant", price: 420000, bg: "2e000e", fg: "fb7185", img: "images/Strawberry_Elephant.png" },
   { name: "Dragonfrutina Dolphinita", price: 475000, bg: "001a13", fg: "34d399", img: "images/Dragonfrutina_Dolphinita.png" },
   { name: "Guerriro Digitale", price: 490000, bg: "001428", fg: "00d4ff", img: "images/Guerriro_Digitale.png" },
-  { name: "Chicleteira Bicicleteira", price: 500000, bg: "0f2200", fg: "86efac", img: null },
-  { name: "Pot Hotspot", price: 525000, bg: "2a0018", fg: "f0abfc", img: null },
+  { name: "Chicleteira Bicicleteira", price: 500000, bg: "0f2200", fg: "86efac", img: "images/Chicleteira_Bicicleteira.png" },
+  { name: "Pot Hotspot", price: 525000, bg: "2a0018", fg: "f0abfc", img: "images/Pot_Hotspot.png" },
 ];
 
 // Rainbow gradient stops shared by the Exclusive category
