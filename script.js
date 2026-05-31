@@ -323,7 +323,7 @@ function renderSlot(i) {
     const brdSt = `background:linear-gradient(#0d0d0d,#0d0d0d) padding-box,${gs} border-box;border:1px solid transparent;`;
 
     el.innerHTML = `
-      <button class="s-clr" data-i="${i}" title="Limpiar slot">✕</button>
+      <button class="s-clr" data-i="${i}" title="Clean slot">✕</button>
       <div class="slot-fil">
         <div class="slot-r1">
           <img class="slot-img" src="${imgUrl(pet, 36)}" alt="${pet.name}" loading="lazy">
@@ -357,7 +357,7 @@ function renderSlot(i) {
     const baseGen = calcGenBase(pn, mn);
     const totalGen = baseGen * Math.pow(1.25, lvl - 1);
     el.innerHTML = `
-      <button class="s-clr" data-i="${i}" title="Limpiar slot">✕</button>
+      <button class="s-clr" data-i="${i}" title="Clean slot">✕</button>
       <div class="slot-fil">
         <div class="slot-r1">
           <img class="slot-img" src="${imgUrl(pet, 36)}" alt="${pet.name}" loading="lazy">
@@ -446,20 +446,20 @@ function buildFloors() {
       <div class="floor-hd">
         <div class="floor-lbl">
           <span class="fbadge">${f + 1}</span>
-          Planta ${f + 1}
+          Floor ${f + 1}
         </div>
         <div class="floor-hd-r">
           <span class="floor-gen" id="fg-${f + 1}">Gen: $0/s</span>
-          <button class="btn-fr" data-floor="${f + 1}">↺ Limpiar</button>
+          <button class="btn-fr" data-floor="${f + 1}">↺ Clean</button>
         </div>
       </div>
       <div class="floor-body">
         <div class="floor-side" id="fs-${f + 1}-l">
-          <div class="side-hdr">◀ Izquierda</div>
+          <div class="side-hdr">◀ Left</div>
         </div>
         <div class="floor-sep"></div>
         <div class="floor-side" id="fs-${f + 1}-r">
-          <div class="side-hdr">Derecha ▶</div>
+          <div class="side-hdr">Right ▶</div>
         </div>
       </div>`;
     cont.appendChild(div);
@@ -555,7 +555,7 @@ document.getElementById("floors").addEventListener("click", e => {
   const frBtn = e.target.closest(".btn-fr");
   if (frBtn) {
     const f = parseInt(frBtn.dataset.floor, 10);
-    if (!confirm(`¿Limpiar todos los slots de la Planta ${f}?`)) return;
+    if (!confirm(`¿Clean every slot of Floor ${f}?`)) return;
     const start = (f - 1) * 10;
     for (let i = start; i < start + 10; i++) {
       S[i] = { pet: "", mut: "Normal", lvl: 75 };
@@ -613,7 +613,7 @@ document.getElementById("btn-rb-dec").addEventListener("click", () => {
 
 // Reset All
 document.getElementById("btn-ra").addEventListener("click", () => {
-  if (!confirm("¿Limpiar los 30 slots de todas las plantas?")) return;
+  if (!confirm("¿Clear all the slots of every floor?")) return;
   S = Array.from({ length: TOTAL }, () => ({ pet: "", mut: "Normal", lvl: 75 }));
   save();
   for (let i = 0; i < TOTAL; i++) renderSlot(i);
