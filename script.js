@@ -497,7 +497,7 @@ function updateGlobal() {
     if (S[i].pet) { tot += calcGen(S[i].pet, S[i].mut, S[i].lvl); act++; }
   }
   // Generación Total: per-day with rebirth multiplier (rebirth × per-second × 86400)
-  const totPerDay = tot * SECONDS_PER_DAY * rebirth;
+  const totPerDay = tot * SECONDS_PER_DAY * rebirth / 2.0394;
   document.getElementById("hs-tot").textContent = `${fmt(totPerDay)}/d`;
   document.getElementById("hs-act").textContent = `${act} / 30`;
 
