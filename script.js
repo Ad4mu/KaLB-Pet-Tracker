@@ -54,7 +54,7 @@ const MUTS = [
 const STORAGE_KEY = "ppt_save_v1";
 const TOTAL = 30;
 
-let S = Array.from({ length: TOTAL }, () => ({ pet: "", mut: "Normal" }));
+let S = Array.from({ length: TOTAL }, () => ({ pet: "", mut: "Normal", lvl: 1 }));
 
 // Track which pet name is being dragged
 let draggedPetName = null;
@@ -70,6 +70,7 @@ function load() {
       S = d.map(sl => ({
         pet: (typeof sl.pet === "string" && PETS.some(p => p.name === sl.pet)) ? sl.pet : "",
         mut: (typeof sl.mut === "string" && MUTS.some(m => m.name === sl.mut)) ? sl.mut : "Normal",
+        lvl: (typeof sl.lvl === "number" && sl.lvl >= 1 && sl.lvl <= 75) ? sl.lvl : 1,
       }));
     }
   } catch (e) { }
@@ -81,13 +82,21 @@ function load() {
 function fmt(n) {
   if (n === 0) return "$0";
   const r = Math.round(n);
+  if (r >= 1_000_000_000_000) {
+    const t = r / 1_000_000_000_000;
+    return "$" + (Number.isInteger(t) ? t.toLocaleString("en-US") : t.toFixed(2)) + "T";
+  }
+  if (r >= 1_000_000_000) {
+    const b = r / 1_000_000_000;
+    return "$" + (Number.isInteger(b) ? b.toLocaleString("en-US") : b.toFixed(2)) + "B";
+  }
   if (r >= 1_000_000) {
     const m = r / 1_000_000;
-    return "$" + (Number.isInteger(m) ? m : m.toFixed(2)).toLocaleString("en-US") + "M";
+    return "$" + (Number.isInteger(m) ? m.toLocaleString("en-US") : m.toFixed(2)) + "M";
   }
   if (r >= 1_000) {
     const k = r / 1_000;
-    return "$" + (Number.isInteger(k) ? k : k.toFixed(2)).toLocaleString("en-US") + "K";
+    return "$" + (Number.isInteger(k) ? k.toLocaleString("en-US") : k.toFixed(2)) + "K";
   }
   return "$" + r.toLocaleString("en-US");
 }
@@ -116,7 +125,8 @@ function bestNonRockyGen() {
   let best = 0;
   for (let i = 0; i < TOTAL; i++) {
     if (S[i].pet && S[i].pet !== "Rocky") {
-      const g = calcGenBase(S[i].pet, S[i].mut);
+      const lvl = S[i].lvl || 1;
+      const g = calcGenBase(S[i].pet, S[i].mut) * Math.pow(1.25, lvl - 1);
       if (g > best) best = g;
     }
   }
@@ -136,7 +146,7 @@ function enforceExclusive(petName, newIdx) {
   const affected = new Set();
   S.forEach((sl, idx) => {
     if (idx !== newIdx && sl.pet === petName) {
-      S[idx] = { pet: "", mut: "Normal" };
+      S[idx] = { pet: "", mut: "Normal", lvl: 1 };
       renderSlot(idx);
       affected.add(Math.floor(idx / 10) + 1);
     }
@@ -144,9 +154,9 @@ function enforceExclusive(petName, newIdx) {
   return affected;
 }
 
-function calcGen(pn, mn) {
-  if (pn === "Rocky") return bestNonRockyGen() * 1.75;
-  return calcGenBase(pn, mn);
+function calcGen(pn, mn, lvl = 1) {
+  if (pn === "Rocky") return bestNonRockyGen() * 1.75 * Math.pow(1.25, lvl - 1);
+  return calcGenBase(pn, mn) * Math.pow(1.25, lvl - 1);
 }
 
 // ════════════════════════════════════════════════════
@@ -262,7 +272,7 @@ function renderSlot(i) {
   const el = document.getElementById(`sl-${i}`);
   if (!el) return;
 
-  const { pet: pn, mut: mn } = S[i];
+  const { pet: pn, mut: mn, lvl = 1 } = S[i];
   const pet = getPet(pn);
   const mut = getMut(mn);
 
@@ -272,10 +282,15 @@ function renderSlot(i) {
   if (hasDragOver) el.classList.add("drag-over");
   el.removeAttribute("data-prev-pet");
 
+  const isMax = lvl === 75;
+  const lvlStr = isMax ? "Lvl 75 MAX" : `Lvl ${lvl}`;
+  const lvlCls = isMax ? "lvl-text max" : "lvl-text";
+
   if (pet && pet.exclusive) {
     // ── ROCKY / EXCLUSIVE slot ──────────────────────────────────────
     el.classList.add("has-pet", "gl-rainbow", "slot-exclusive");
-    const gen = calcGen("Rocky", "Normal");
+    const baseGen = bestNonRockyGen() * 1.75;
+    const totalGen = baseGen * Math.pow(1.25, lvl - 1);
     const gs = gradStr(EXCL_GRAD);
     const textSt = `background:${gs};-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;`;
     const brdSt = `background:linear-gradient(#0d0d0d,#0d0d0d) padding-box,${gs} border-box;border:1px solid transparent;`;
@@ -290,7 +305,15 @@ function renderSlot(i) {
               <span style="${textSt}">✦ EXCLUSIVE</span>
             </span>
             <div class="slot-nm" style="font-weight:900;" title="${pet.name}">${pet.name}</div>
-            <div class="slot-gv"><span>💵</span> <span class="slot-gv-val">${fmt(gen)}/s</span></div>
+            <div class="slot-gv"><span>💵</span> <span class="slot-gv-val">${fmt(baseGen)}/s</span></div>
+          </div>
+          <div class="slot-lvl">
+            <div class="${lvlCls}">${lvlStr}</div>
+            <div class="lvl-gen">${fmt(totalGen)}/s</div>
+            <div class="lvl-controls">
+              <button class="btn-lvl" data-dir="-1" data-i="${i}">-</button>
+              <button class="btn-lvl" data-dir="1" data-i="${i}">+</button>
+            </div>
           </div>
         </div>
         <div class="slot-r2">
@@ -304,7 +327,8 @@ function renderSlot(i) {
     el.classList.add("has-pet");
     if (mut.gl) el.classList.add(mut.gl);
 
-    const gen = calcGenBase(pn, mn);
+    const baseGen = calcGenBase(pn, mn);
+    const totalGen = baseGen * Math.pow(1.25, lvl - 1);
     el.innerHTML = `
       <button class="s-clr" data-i="${i}" title="Limpiar slot">✕</button>
       <div class="slot-fil">
@@ -313,7 +337,15 @@ function renderSlot(i) {
           <div class="slot-meta">
             ${mutBadgeHTML(mut)}
             <div class="slot-nm" title="${pet.name}">${pet.name}</div>
-            <div class="slot-gv"><span>💵</span> <span class="slot-gv-val">${fmt(gen)}/s</span></div>
+            <div class="slot-gv"><span>💵</span> <span class="slot-gv-val">${fmt(baseGen)}/s</span></div>
+          </div>
+          <div class="slot-lvl">
+            <div class="${lvlCls}">${lvlStr}</div>
+            <div class="lvl-gen">${fmt(totalGen)}/s</div>
+            <div class="lvl-controls">
+              <button class="btn-lvl" data-dir="-1" data-i="${i}">-</button>
+              <button class="btn-lvl" data-dir="1" data-i="${i}">+</button>
+            </div>
           </div>
         </div>
         <div class="slot-r2">
@@ -427,7 +459,7 @@ function buildFloors() {
 function updateFloor(f) {           // f = 1-indexed
   const start = (f - 1) * 10;
   let t = 0;
-  for (let i = start; i < start + 10; i++) t += calcGen(S[i].pet, S[i].mut);
+  for (let i = start; i < start + 10; i++) t += calcGen(S[i].pet, S[i].mut, S[i].lvl);
   const el = document.getElementById(`fg-${f}`);
   if (el) el.textContent = `Gen: ${fmt(t)}/s`;
 }
@@ -435,7 +467,7 @@ function updateFloor(f) {           // f = 1-indexed
 function updateGlobal() {
   let tot = 0, act = 0;
   for (let i = 0; i < TOTAL; i++) {
-    if (S[i].pet) { tot += calcGen(S[i].pet, S[i].mut); act++; }
+    if (S[i].pet) { tot += calcGen(S[i].pet, S[i].mut, S[i].lvl); act++; }
   }
   document.getElementById("hs-tot").textContent = `${fmt(tot)}/s`;
   document.getElementById("hs-act").textContent = `${act} / 30`;
@@ -484,7 +516,7 @@ document.getElementById("floors").addEventListener("click", e => {
   if (clrBtn) {
     const i = parseInt(clrBtn.dataset.i, 10);
     if (isNaN(i)) return;
-    S[i] = { pet: "", mut: "Normal" };
+    S[i] = { pet: "", mut: "Normal", lvl: 1 };
     save(); renderSlot(i);
     updateFloor(Math.floor(i / 10) + 1); updateGlobal();
     return;
@@ -497,17 +529,40 @@ document.getElementById("floors").addEventListener("click", e => {
     if (!confirm(`¿Limpiar todos los slots de la Planta ${f}?`)) return;
     const start = (f - 1) * 10;
     for (let i = start; i < start + 10; i++) {
-      S[i] = { pet: "", mut: "Normal" };
+      S[i] = { pet: "", mut: "Normal", lvl: 1 };
       renderSlot(i);
     }
     save(); updateFloor(f); updateGlobal();
+  }
+
+  // Level up/down
+  const lvlBtn = e.target.closest(".btn-lvl");
+  if (lvlBtn) {
+    const i = parseInt(lvlBtn.dataset.i, 10);
+    const dir = parseInt(lvlBtn.dataset.dir, 10);
+    if (isNaN(i) || isNaN(dir)) return;
+    
+    let newLvl = (S[i].lvl || 1) + dir;
+    if (newLvl < 1) newLvl = 1;
+    if (newLvl > 75) newLvl = 75;
+    
+    if (newLvl !== S[i].lvl) {
+      S[i].lvl = newLvl;
+      save();
+      renderSlot(i);
+      const ri = findRockySlot();
+      if (ri >= 0 && ri !== i) renderSlot(ri);
+      
+      updateFloor(Math.floor(i / 10) + 1);
+      updateGlobal();
+    }
   }
 });
 
 // Reset All
 document.getElementById("btn-ra").addEventListener("click", () => {
   if (!confirm("¿Limpiar los 30 slots de todas las plantas?")) return;
-  S = Array.from({ length: TOTAL }, () => ({ pet: "", mut: "Normal" }));
+  S = Array.from({ length: TOTAL }, () => ({ pet: "", mut: "Normal", lvl: 1 }));
   save();
   for (let i = 0; i < TOTAL; i++) renderSlot(i);
   updateAll();
@@ -543,6 +598,7 @@ document.getElementById("file-imp").addEventListener("change", e => {
         S = d.map(sl => ({
           pet: (typeof sl.pet === "string" && PETS.some(p => p.name === sl.pet)) ? sl.pet : "",
           mut: (typeof sl.mut === "string" && MUTS.some(m => m.name === sl.mut)) ? sl.mut : "Normal",
+          lvl: (typeof sl.lvl === "number" && sl.lvl >= 1 && sl.lvl <= 75) ? sl.lvl : 1,
         }));
         save();
         for (let i = 0; i < TOTAL; i++) renderSlot(i);
