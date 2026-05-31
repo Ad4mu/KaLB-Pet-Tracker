@@ -611,7 +611,8 @@ body::before {
   flex-direction: column;
   align-items: flex-end;
   gap: 0.15rem;
-  padding-right: 1.1rem; /* Avoid overlap with .s-clr */
+  padding-right: 1.1rem;
+  /* Avoid overlap with .s-clr */
   flex-shrink: 0;
 }
 
@@ -629,9 +630,21 @@ body::before {
 
 .lvl-gen {
   font-family: var(--fh);
-  font-size: 0.55rem;
-  color: var(--accent);
+  font-weight: 900;
+  font-size: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.22rem;
   margin-bottom: 0.1rem;
+}
+
+.lvl-gen-val {
+  background: linear-gradient(135deg, #9BE000, #05DE00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+  font-size: 0.6rem;
 }
 
 .lvl-controls {
@@ -683,7 +696,7 @@ body::before {
 
 .slot-gv {
   font-family: var(--fh);
-  font-size: .58rem;
+  font-size: .7rem;
   font-weight: 900;
   line-height: 1.25;
   display: flex;
