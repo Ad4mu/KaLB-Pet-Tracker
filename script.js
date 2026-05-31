@@ -36,16 +36,16 @@ const MUTS = [
   { name: "Radioactive", mult: 8, grad: ["#e6ff84", "#87ff1b"], gl: "gl-radioactive" },
   { name: "Shadow", mult: 12, grad: ["#262626", "#474747"], gl: "gl-shadow" },
   { name: "Electrified", mult: 16, grad: ["#474747", "#55eeff"], gl: "gl-electrified" },
-  { name: "Rainbow", mult: 30, grad: ["#ff1000", "#fea100", "#54ff4b", "#00efba", "#2753ff", "#bc08ff"], gl: "gl-rainbow" },
-  { name: "Astral", mult: 35, grad: ["#bf73ff", "#bf73ff"], gl: "gl-astral" },
-  { name: "Wet", mult: 8, grad: ["#4876fd", "#0c23b5"], gl: "gl-wet" },
-  { name: "Alien", mult: 16, grad: ["#fe00b7", "#ad00c7"], gl: "gl-alien" },
-  { name: "Bacon", mult: 20, grad: ["#ff9e37", "#ff3737"], gl: "gl-bacon" },
+  { name: "Rainbow", mult: 40, grad: ["#ff1000", "#fea100", "#54ff4b", "#00efba", "#2753ff", "#bc08ff"], gl: "gl-rainbow" },
+  { name: "Astral", mult: 50, grad: ["#bf73ff", "#bf73ff"], gl: "gl-astral" },
+  { name: "Wet", mult: 16, grad: ["#4876fd", "#0c23b5"], gl: "gl-wet" },
+  { name: "Alien", mult: 22, grad: ["#fe00b7", "#ad00c7"], gl: "gl-alien" },
+  { name: "Bacon", mult: 30, grad: ["#ff9e37", "#ff3737"], gl: "gl-bacon" },
   { name: "Virus", mult: 14, grad: ["#32f90f", "#061b03"], gl: "gl-virus" },
   { name: "Void", mult: 12, grad: ["#7d0e8e", "#361a47"], gl: "gl-void" },
   { name: "Enchanted", mult: 12, grad: ["#eac6ff", "#d466ff"], gl: "gl-enchanted" },
-  { name: "Phantom", mult: 25, grad: ["#d1ffd0", "#93ff8b"], gl: "gl-phantom" },
-  { name: "Volcanic", mult: 22, grad: ["#fc0000", "#433515"], gl: "gl-volcanic" },
+  { name: "Phantom", mult: 35, grad: ["#d1ffd0", "#93ff8b"], gl: "gl-phantom" },
+  { name: "Volcanic", mult: 35, grad: ["#fc0000", "#433515"], gl: "gl-volcanic" },
 ];
 
 // ════════════════════════════════════════════════════
