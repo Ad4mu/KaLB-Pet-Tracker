@@ -123,7 +123,6 @@ body::before {
   color: var(--accent);
   white-space: nowrap;
   user-select: none;
-  text-shadow: 0 0 20px rgba(255, 255, 255, .3);
 }
 
 .hstats {
@@ -153,12 +152,10 @@ body::before {
 
 #hs-act {
   color: var(--accent);
-  text-shadow: 0 0 16px rgba(255, 255, 255, .4)
 }
 
 #hs-tot {
   color: var(--gold);
-  text-shadow: 0 0 16px rgba(255, 255, 255, .25)
 }
 
 #btn-ra {
@@ -235,7 +232,7 @@ body::before {
    SIDEBAR — PET DICTIONARY
 ═══════════════════════════════════════════════════ */
 #sb {
-  width: 275px;
+  width: 400px;
   min-width: 200px;
   max-width: 50vw;
   flex-shrink: 0;
@@ -482,6 +479,17 @@ body::before {
   font-family: var(--fh);
   font-size: .6rem;
   color: var(--gold);
+  display: flex;
+  align-items: center;
+  gap: 0.22rem;
+}
+
+.floor-gen-val {
+  background: linear-gradient(135deg, #9BE000, #05DE00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
 }
 
 .btn-fr {

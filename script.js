@@ -517,6 +517,7 @@ function attachSlotEvents(el, i) {
     }
 
     S[i].pet = name;
+    S[i].mut = currentDictMutName;
     save();
     renderSlot(i);
     updateFloor(Math.floor(i / 10) + 1);
@@ -539,7 +540,7 @@ function buildFloors() {
           Floor ${f + 1}
         </div>
         <div class="floor-hd-r">
-          <span class="floor-gen" id="fg-${f + 1}">Gen: $0/s</span>
+          <span class="floor-gen" id="fg-${f + 1}"><span>💵</span> <span class="floor-gen-val">$0/s</span></span>
           <button class="btn-fr" data-floor="${f + 1}">↺ Clean</button>
         </div>
       </div>
@@ -579,7 +580,7 @@ function updateFloor(f) {           // f = 1-indexed
   let t = 0;
   for (let i = start; i < start + 10; i++) t += calcGen(S[i].pet, S[i].mut, S[i].lvl);
   const el = document.getElementById(`fg-${f}`);
-  if (el) el.textContent = `Gen: ${fmt(t)}/s`;
+  if (el) el.innerHTML = `<span>💵</span> <span class="floor-gen-val">${fmt(t)}/s</span>`;
 }
 
 function updateGlobal() {
