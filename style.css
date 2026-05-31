@@ -301,15 +301,7 @@ body::before {
   color: var(--purp)
 }
 
-.sec-title::before {
-  content: '';
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  box-shadow: 0 0 8px currentColor;
-  background: currentColor;
-}
+
 
 /* Dictionary cards */
 .dcard {
@@ -398,7 +390,7 @@ body::before {
 }
 
 .dc-excl-tag {
-  font-size: .42rem;
+  font-size: .5rem;
   letter-spacing: .18em;
   text-transform: uppercase;
   font-weight: 900;

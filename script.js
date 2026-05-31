@@ -5,23 +5,23 @@ const PETS = [
   // ── Exclusive ────────────────────────────────────────────────────────────
   {
     name: "Rocky", price: 0, bg: "000000", fg: "ff1000", img: "images/Rocky.png",
-    exclusive: true, category: "Exclusive"
+    exclusive: true, category: "Exclusive", rarity: "Exclusive"
   },
   // ── Standard ─────────────────────────────────────────────────────────────
-  { name: "Blackhole Goat", price: 125000, bg: "09001c", fg: "9333ea", img: "images/Blackhole_Goat.png" },
-  { name: "Cappuccino Clownino", price: 135000, bg: "3d1900", fg: "d4893a", img: "images/Cappuccino_Clownino.png" },
-  { name: "Compactoroni Diskaloni", price: 135000, bg: "001930", fg: "38bdf8", img: "images/Compactoroni_Diskaloni.png" },
-  { name: "Nuclearo Dinossauro", price: 190000, bg: "001a0c", fg: "22c55e", img: "images/Nuclearo_Dinossauro.png" },
-  { name: "Silueta", price: 200000, bg: "14102c", fg: "a78bfa", img: "images/Silueta.png" },
-  { name: "Chillin Chilli", price: 220000, bg: "2e0000", fg: "f87171", img: "images/Chillin_Chilli.png" },
-  { name: "Corn Sahur", price: 225000, bg: "2b1900", fg: "fbbf24", img: "images/Corn_Sahur.png" },
-  { name: "Crazylone Pizaione", price: 225000, bg: "1a0028", fg: "e879f9", img: "images/Crazylone_Pizaione.png" },
-  { name: "Meowl", price: 275000, bg: "001728", fg: "67e8f9", img: "images/Meowl.png" },
-  { name: "Strawberry Elephant", price: 420000, bg: "2e000e", fg: "fb7185", img: "images/Strawberry_Elephant.png" },
-  { name: "Dragonfrutina Dolphinita", price: 475000, bg: "001a13", fg: "34d399", img: "images/Dragonfrutina_Dolphinita.png" },
-  { name: "Guerriro Digitale", price: 490000, bg: "001428", fg: "00d4ff", img: "images/Guerriro_Digitale.png" },
-  { name: "Chicleteira Bicicleteira", price: 500000, bg: "0f2200", fg: "86efac", img: "images/Chicleteira_Bicicleteira.png" },
-  { name: "Pot Hotspot", price: 525000, bg: "2a0018", fg: "f0abfc", img: "images/Pot_Hotspot.png" },
+  { name: "Blackhole Goat", price: 125000, bg: "09001c", fg: "9333ea", img: "images/Blackhole_Goat.png", rarity: "OG" },
+  { name: "Cappuccino Clownino", price: 135000, bg: "3d1900", fg: "d4893a", img: "images/Cappuccino_Clownino.png", rarity: "OG" },
+  { name: "Compactoroni Diskaloni", price: 135000, bg: "001930", fg: "38bdf8", img: "images/Compactoroni_Diskaloni.png", rarity: "OG" },
+  { name: "Nuclearo Dinossauro", price: 190000, bg: "001a0c", fg: "22c55e", img: "images/Nuclearo_Dinossauro.png", rarity: "OG" },
+  { name: "Silueta", price: 200000, bg: "14102c", fg: "a78bfa", img: "images/Silueta.png", rarity: "OG" },
+  { name: "Chillin Chilli", price: 220000, bg: "2e0000", fg: "f87171", img: "images/Chillin_Chilli.png", rarity: "OG" },
+  { name: "Corn Sahur", price: 225000, bg: "2b1900", fg: "fbbf24", img: "images/Corn_Sahur.png", rarity: "OG" },
+  { name: "Crazylone Pizaione", price: 225000, bg: "1a0028", fg: "e879f9", img: "images/Crazylone_Pizaione.png", rarity: "OG" },
+  { name: "Meowl", price: 275000, bg: "001728", fg: "67e8f9", img: "images/Meowl.png", rarity: "OG" },
+  { name: "Strawberry Elephant", price: 420000, bg: "2e000e", fg: "fb7185", img: "images/Strawberry_Elephant.png", rarity: "OG" },
+  { name: "Dragonfrutina Dolphinita", price: 475000, bg: "001a13", fg: "34d399", img: "images/Dragonfrutina_Dolphinita.png", rarity: "OG" },
+  { name: "Guerriro Digitale", price: 490000, bg: "001428", fg: "00d4ff", img: "images/Guerriro_Digitale.png", rarity: "Celestial" },
+  { name: "Chicleteira Bicicleteira", price: 500000, bg: "0f2200", fg: "86efac", img: "images/Chicleteira_Bicicleteira.png", rarity: "Celestial" },
+  { name: "Pot Hotspot", price: 525000, bg: "2a0018", fg: "f0abfc", img: "images/Pot_Hotspot.png", rarity: "Celestial" },
 ];
 
 // Rainbow gradient stops shared by the Exclusive category
@@ -62,6 +62,7 @@ let rebirth = 1;
 
 // Track which pet name is being dragged
 let draggedPetName = null;
+let draggedSlotIndex = -1;
 
 function save() {
   try {
@@ -214,13 +215,21 @@ function mutBadgeHTML(mut) {
     `</span>`;
 }
 
+let currentDictMutName = "Normal";
+let currentDictRarity = "All";
+
 // ════════════════════════════════════════════════════
 //  BUILD DICTIONARY (with drag support)
 // ════════════════════════════════════════════════════
 function buildDict() {
   const el = document.getElementById("dict");
+  el.innerHTML = ""; // Clear existing
+
+  const mutObj = getMut(currentDictMutName);
 
   PETS.forEach(p => {
+    if (currentDictRarity !== "All" && p.rarity !== currentDictRarity) return;
+
     const d = document.createElement("div");
     d.className = "dcard";
     d.draggable = true;
@@ -228,26 +237,43 @@ function buildDict() {
 
     if (p.exclusive) {
       // ── Exclusive card: standard layout with exclusive tags ──
-      d.classList.add("dcard-exclusive");
+      d.classList.add("dcard-exclusive", "gl-rainbow");
       d.title = `${p.name} — EXCLUSIVE · Solo 1 slot · 175% del mejor pet · Arrastra a un slot`;
       d.innerHTML = `
         <img src="${imgUrl(p, 33)}" alt="${p.name}" loading="lazy">
         <div class="dc-excl-info">
           <span class="dc-name" style="font-weight:900;">${p.name}</span>
-          <span class="dc-excl-tag" style="color:var(--gold);">✦ EXCLUSIVE</span>
+          <span class="dc-excl-tag" style="background:linear-gradient(135deg, #ff1000, #fea100, #54ff4b, #00efba, #2753ff, #bc08ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">EXCLUSIVE</span>
         </div>
         <div class="dc-price"><span>💵</span> <span class="slot-gv-val">175%</span></div>`;
     } else {
-      d.title = `${p.name} — Base: ${fmt(p.price)} · Arrastra a un slot`;
+      if (mutObj.gl) d.classList.add(mutObj.gl);
+      
+      const displayPrice = p.price * mutObj.mult;
+      d.title = `${p.name} — Base: ${fmt(p.price)} (×${mutObj.mult}) · Arrastra a un slot`;
+
+      let rarityTag = "";
+      if (p.rarity === "OG") {
+        const gs = gradStr(EXCL_GRAD);
+        const textStyle = `background:${gs};-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;`;
+        rarityTag = `<span style="${textStyle} font-size: .5rem; letter-spacing: .18em; text-transform: uppercase; font-weight: 900;">OG</span>`;
+      } else if (p.rarity === "Celestial") {
+        rarityTag = `<span style="color: #f5cf00; font-size: .5rem; letter-spacing: .18em; text-transform: uppercase; font-weight: 900;">CELESTIAL</span>`;
+      }
+
       d.innerHTML = `
         <img src="${imgUrl(p, 33)}" alt="${p.name}" loading="lazy">
-        <span class="dc-name">${p.name}</span>
-        <div class="dc-price"><span>💵</span> <span class="slot-gv-val">${fmt(p.price)}/s</span></div>`;
+        <div class="dc-excl-info">
+          <span class="dc-name">${p.name}</span>
+          ${rarityTag}
+        </div>
+        <div class="dc-price"><span>💵</span> <span class="slot-gv-val">${fmt(displayPrice)}/s</span></div>`;
     }
 
     // Drag events
     d.addEventListener("dragstart", e => {
       draggedPetName = p.name;
+      draggedSlotIndex = -1;
       d.classList.add("dragging");
       e.dataTransfer.effectAllowed = "copy";
       e.dataTransfer.setData("text/plain", p.name);
@@ -265,7 +291,7 @@ function buildDict() {
 // ════════════════════════════════════════════════════
 function petOpts(sel) {
   return `<option value="">— Sin pet —</option>` +
-    PETS.map(p => `<option value="${p.name}"${p.name === sel ? " selected" : ""}>${p.exclusive ? "✦ " : ""}${p.name}</option>`).join("");
+    PETS.map(p => `<option value="${p.name}"${p.name === sel ? " selected" : ""}>${p.name}</option>`).join("");
 }
 
 function mutOpts(sel) {
@@ -288,6 +314,25 @@ function mutOpts(sel) {
     else reg += opt;
   });
   return `<optgroup label="Regular">${reg}</optgroup><optgroup label="Event">${evt}</optgroup>`;
+}
+
+function initDictMut() {
+  const sel = document.getElementById("dict-mut");
+  if (!sel) return;
+  sel.innerHTML = mutOpts(currentDictMutName);
+  sel.addEventListener("change", (e) => {
+    currentDictMutName = e.target.value;
+    buildDict();
+  });
+}
+
+function initDictRarity() {
+  const sel = document.getElementById("dict-rarity");
+  if (!sel) return;
+  sel.addEventListener("change", (e) => {
+    currentDictRarity = e.target.value;
+    buildDict();
+  });
 }
 
 // ════════════════════════════════════════════════════
@@ -315,12 +360,12 @@ function renderSlot(i) {
 
   if (isRocky) {
     // ── ROCKY / EXCLUSIVE slot ──────────────────────────────────────
+    el.draggable = true;
     el.classList.add("has-pet", "gl-rainbow", "slot-exclusive");
     const baseGen = bestNonRockyGen() * 1.75;
     const totalGen = baseGen;
     const gs = gradStr(EXCL_GRAD);
     const textSt = `background:${gs};-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;`;
-    const brdSt = `background:linear-gradient(#0d0d0d,#0d0d0d) padding-box,${gs} border-box;border:1px solid transparent;`;
 
     el.innerHTML = `
       <button class="s-clr" data-i="${i}" title="Clean slot">✕</button>
@@ -328,8 +373,8 @@ function renderSlot(i) {
         <div class="slot-r1">
           <img class="slot-img" src="${imgUrl(pet, 36)}" alt="${pet.name}" loading="lazy">
           <div class="slot-meta">
-            <span class="mbadge" style="${brdSt}">
-              <span style="${textSt}">✦ EXCLUSIVE</span>
+            <span class="mbadge gl-rainbow">
+              <span style="${textSt}">EXCLUSIVE</span>
             </span>
             <div class="slot-nm" style="font-weight:900;" title="${pet.name}">${pet.name}</div>
             <div class="slot-gv"><span>💵</span> <span class="slot-gv-val">${fmt(baseGen)}/s</span></div>
@@ -338,8 +383,10 @@ function renderSlot(i) {
             <div class="${lvlCls}">${lvlStr}</div>
             <div class="lvl-gen"><span>💵</span> <span class="lvl-gen-val">${fmt(totalGen)}/s</span></div>
             <div class="lvl-controls">
+              <button class="btn-lvl" disabled style="opacity: 0.3; cursor: not-allowed; font-size: 0.35rem;">MIN</button>
               <button class="btn-lvl" disabled style="opacity: 0.3; cursor: not-allowed;">-</button>
               <button class="btn-lvl" disabled style="opacity: 0.3; cursor: not-allowed;">+</button>
+              <button class="btn-lvl" disabled style="opacity: 0.3; cursor: not-allowed; font-size: 0.35rem;">MAX</button>
             </div>
           </div>
         </div>
@@ -351,6 +398,7 @@ function renderSlot(i) {
 
   } else if (pet) {
     // ── Standard slot ───────────────────────────────────────────────
+    el.draggable = true;
     el.classList.add("has-pet");
     if (mut.gl) el.classList.add(mut.gl);
 
@@ -370,8 +418,10 @@ function renderSlot(i) {
             <div class="${lvlCls}">${lvlStr}</div>
             <div class="lvl-gen"><span>💵</span> <span class="lvl-gen-val">${fmt(totalGen)}/s</span></div>
             <div class="lvl-controls">
+              <button class="btn-lvl" data-dir="min" data-i="${i}" style="font-size: 0.35rem;">MIN</button>
               <button class="btn-lvl" data-dir="-1" data-i="${i}">-</button>
               <button class="btn-lvl" data-dir="1" data-i="${i}">+</button>
+              <button class="btn-lvl" data-dir="max" data-i="${i}" style="font-size: 0.35rem;">MAX</button>
             </div>
           </div>
         </div>
@@ -383,6 +433,7 @@ function renderSlot(i) {
 
   } else {
     // ── Empty slot ──────────────────────────────────────────────────
+    el.draggable = false;
     el.innerHTML = `
       <div class="slot-emp">
         <div class="drag-hint">↓ Arrastra aquí</div>
@@ -390,18 +441,34 @@ function renderSlot(i) {
         <select class="ms" data-i="${i}">${mutOpts(mn)}</select>
       </div>`;
   }
-
-  attachSlotDropEvents(el, i);
 }
 
 // ════════════════════════════════════════════════════
-//  DRAG & DROP — SLOT DROP TARGETS
+//  DRAG & DROP — SLOT EVENTS
 // ════════════════════════════════════════════════════
-function attachSlotDropEvents(el, i) {
+function attachSlotEvents(el, i) {
+  el.addEventListener("dragstart", e => {
+    if (!S[i].pet) {
+      e.preventDefault();
+      return;
+    }
+    draggedPetName = S[i].pet;
+    draggedSlotIndex = i;
+    el.classList.add("dragging");
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("application/x-slot-index", i.toString());
+    e.dataTransfer.setData("text/plain", S[i].pet);
+  });
+
+  el.addEventListener("dragend", e => {
+    el.classList.remove("dragging");
+    draggedSlotIndex = -1;
+  });
+
   el.addEventListener("dragover", e => {
     if (!draggedPetName) return;
     e.preventDefault();
-    e.dataTransfer.dropEffect = "copy";
+    e.dataTransfer.dropEffect = draggedSlotIndex >= 0 ? "move" : "copy";
     el.classList.add("drag-over");
   });
 
@@ -415,6 +482,30 @@ function attachSlotDropEvents(el, i) {
   el.addEventListener("drop", e => {
     e.preventDefault();
     el.classList.remove("drag-over");
+
+    const sourceStr = e.dataTransfer.getData("application/x-slot-index");
+    let fromIdx = draggedSlotIndex;
+    if (sourceStr) fromIdx = parseInt(sourceStr, 10);
+
+    if (fromIdx >= 0) {
+      if (fromIdx === i) return;
+      
+      const temp = S[i];
+      S[i] = S[fromIdx];
+      S[fromIdx] = temp;
+      
+      save();
+      renderSlot(fromIdx);
+      renderSlot(i);
+      
+      const f1 = Math.floor(fromIdx / 10) + 1;
+      const f2 = Math.floor(i / 10) + 1;
+      updateFloor(f1);
+      if (f1 !== f2) updateFloor(f2);
+      updateGlobal();
+      return;
+    }
+
     const name = e.dataTransfer.getData("text/plain") || draggedPetName;
     if (!name || !PETS.some(p => p.name === name)) return;
 
@@ -439,13 +530,12 @@ function attachSlotDropEvents(el, i) {
 function buildFloors() {
   const cont = document.getElementById("floors");
 
-  for (let f = 0; f < 3; f++) {
+  for (let f = 2; f >= 0; f--) {
     const div = document.createElement("div");
     div.className = "floor";
     div.innerHTML = `
       <div class="floor-hd">
         <div class="floor-lbl">
-          <span class="fbadge">${f + 1}</span>
           Floor ${f + 1}
         </div>
         <div class="floor-hd-r">
@@ -474,6 +564,7 @@ function buildFloors() {
         const slotEl = document.createElement("div");
         slotEl.id = `sl-${idx}`;
         sideEl.appendChild(slotEl);
+        attachSlotEvents(slotEl, idx);
         renderSlot(idx);
       }
     }
@@ -545,7 +636,7 @@ document.getElementById("floors").addEventListener("click", e => {
   if (clrBtn) {
     const i = parseInt(clrBtn.dataset.i, 10);
     if (isNaN(i)) return;
-    S[i] = { pet: "", mut: "Normal", lvl: 1 };
+    S[i] = { pet: "", mut: "Normal", lvl: 75 };
     save(); renderSlot(i);
     updateFloor(Math.floor(i / 10) + 1); updateGlobal();
     return;
@@ -568,10 +659,19 @@ document.getElementById("floors").addEventListener("click", e => {
   const lvlBtn = e.target.closest(".btn-lvl");
   if (lvlBtn) {
     const i = parseInt(lvlBtn.dataset.i, 10);
-    const dir = parseInt(lvlBtn.dataset.dir, 10);
-    if (isNaN(i) || isNaN(dir)) return;
+    const dir = lvlBtn.dataset.dir;
+    if (isNaN(i) || !dir) return;
 
-    let newLvl = (S[i].lvl || 1) + dir;
+    let newLvl = S[i].lvl || 75;
+    if (dir === "min") {
+      newLvl = 1;
+    } else if (dir === "max") {
+      newLvl = 75;
+    } else {
+      const dirNum = parseInt(dir, 10);
+      if (!isNaN(dirNum)) newLvl += dirNum;
+    }
+
     if (newLvl < 1) newLvl = 1;
     if (newLvl > 75) newLvl = 75;
 
@@ -723,6 +823,8 @@ if (savedWidth && sidebar) sidebar.style.width = savedWidth;
 
 load();
 updateRebirthDisplay();
+initDictMut();
+initDictRarity();
 buildDict();
 buildFloors();
 updateAll();

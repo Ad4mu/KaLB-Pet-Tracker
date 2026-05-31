@@ -51,7 +51,21 @@
   <!-- ───────────────────── APP ───────────────────── -->
   <div id="app">
     <aside id="sb">
-      <div class="sec-title c-cyan">Index</div>
+      <div class="sec-title c-cyan"
+        style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <span>Index</span>
+        <div style="display: flex; gap: 0.3rem;">
+          <select id="dict-mut"
+            style="background: var(--bg3); border: 2px solid var(--b); color: var(--txt); font-family: var(--fb); font-weight: 900; font-size: .52rem; padding: .1rem .2rem; border-radius: var(--r); outline: none; cursor: pointer; max-width: 120px;"></select>
+          <select id="dict-rarity"
+            style="background: var(--bg3); border: 2px solid var(--b); color: var(--txt); font-family: var(--fb); font-weight: 900; font-size: .52rem; padding: .1rem .2rem; border-radius: var(--r); outline: none; cursor: pointer; max-width: 120px;">
+            <option value="All">All Rarities</option>
+            <option value="OG" style="color: #ff1000; font-weight: bold;">OG</option>
+            <option value="Celestial" style="color: #f5cf00; font-weight: bold;">Celestial</option>
+            <option value="Exclusive" style="color: var(--gold); font-weight: bold;">Exclusive</option>
+          </select>
+        </div>
+      </div>
       <div id="dict"></div>
     </aside>
     <div id="sb-resizer"></div>
